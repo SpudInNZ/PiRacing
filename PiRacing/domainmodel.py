@@ -32,7 +32,7 @@ class iRacingRefData:
 
 class SeasonStanding:
         
-    def __init__(self, position, name, points, dropped, clubname, countrycode, irating, avgfinish, topfive, starts, lapslead, wins, incidents, division, weekscounted, laps, poles, avgstart):
+    def __init__(self, position, name, points, dropped, clubname, countrycode, irating, avgfinish, topfive, starts, lapslead, wins, incidents, division, weekscounted, laps, poles, avgstart, custid):
                         
         self.position=position
         self.name=name
@@ -52,6 +52,7 @@ class SeasonStanding:
         self.laps=laps
         self.poles=poles
         self.avgstart=avgstart
+	self.custid = custid
 
 class SeasonStandings:
            

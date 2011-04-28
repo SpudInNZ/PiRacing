@@ -35,7 +35,7 @@ class iRacingDAL(DALBase.DALBase):
             self.__initConnection()
             params = urllib.urlencode({"username":self.__username,"password":self.__password})
             params = params.encode('utf-8')
-            self.__logger.info("Logging in")            
+            self.__logger.info("Logging in as %s" % self.__username)            
             response = self.__opener.open("https://members.iracing.com/membersite/Login", params)
             if response.getcode() != 200:
                 self.__logger.critical("Error logging in " + remotefile.getcode())
@@ -65,8 +65,8 @@ class iRacingDAL(DALBase.DALBase):
         except Exception as e:
             self.__logger.warn('Failed to access %s, %s' % (url, str(e)))
             raise e
-        finally:
-            return response
+        
+        return response
 
     def __makeRace(self, jsonracedata, json_keys):
         racers = jsonracedata[json_keys['sizeoffield']]
@@ -103,6 +103,8 @@ class iRacingDAL(DALBase.DALBase):
         url = 'http://members.iracing.com/membersite/member/GetLaps?&subsessionid=%d&custid=%d&simsessnum=0' % (subsessionid, custid)
         
         response = self.__readUrl(url)
+        if response is None:
+            return []
         txt = response.read()
         try:
             j = json.loads(txt)    
@@ -274,7 +276,7 @@ class iRacingDAL(DALBase.DALBase):
             
             racedata = json.loads(txt)
             if len(racedata) == 0:
-                self.__logger.warn("iRacing returned no races for season %s week %s" % ( len(races), str(season), str(week) ) )
+                self.__logger.warn("iRacing returned no races for season %s week %s" % ( str(season), str(week) ) )
                 return []
             
             races = racedata['d']
@@ -294,7 +296,7 @@ class iRacingDAL(DALBase.DALBase):
             [Races.append(self.__makeRace(jsonracedata, jsonkeys)) for jsonracedata in races]
             
         except BaseException as e:
-            self.__logger.error("Failed do retrieve races for season %s week %s: %s" % ( str(season), str(week), str(e) ) )
+            self.__logger.error("Failed to retrieve races for season %s week %s: %s" % ( str(season), str(week), str(e) ) )
             
         return Races
     
@@ -324,6 +326,7 @@ class iRacingDAL(DALBase.DALBase):
         lapsIdx = fieldnames.index('laps')
         polesIdx = fieldnames.index('poles')
         avgstartIdx = fieldnames.index('avgstart')
+        custidIdx = fieldnames.index('custid')
         
         # custidIdx = fieldnames[0].index('custid') --- this is not available yet
         
@@ -347,7 +350,8 @@ class iRacingDAL(DALBase.DALBase):
             laps = int(row[lapsIdx])
             poles = int(row[polesIdx])
             avgstart = int(row[avgstartIdx])
-            standings.append(SeasonStanding(position, name, points, dropped, clubname, countrycode, irating, avgfinish, topfive, starts, lapslead, wins, incidents, division, weekscounted, laps, poles, avgstart))
+            custid = int(row[custidIdx])
+            standings.append(SeasonStanding(position, name, points, dropped, clubname, countrycode, irating, avgfinish, topfive, starts, lapslead, wins, incidents, division, weekscounted, laps, poles, avgstart, custid))
                     
         s = SeasonStandings(season, standings)
         return s

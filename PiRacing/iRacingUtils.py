@@ -28,9 +28,16 @@ def getConfigFileName():
 
 def getAccountDetails(configFileName = None):
     """
-    Reads a username and password combination from the specified configuration file and returns them in a 2-tuple
+    Reads a username and password combination from the specified configuration file and returns them in a 2-tuple.
+    Will use environment variables PIRACING_USERNAME and PIRACING_PASSWORD if set.
     """
     
+    username = os.environ.get("PIRACING_USERNAME", None)
+    password = os.environ.get("PIRACING_PASSWORD", None)
+    if username is not None:
+        return username, password        
+                
+            
     if configFileName is None:
         configFileName = os.path.join(getConfigDir(), "Account.cfg")
         
