@@ -8,17 +8,18 @@ import pickle
 import threading
 
 class WeekThread(threading.Thread):
-    def __init__(self, season, week, verbose):
+    def __init__(self, folder, season, week, verbose):
+        self.folder = folder
         self.season = season
         self.week = week
         self.verbose = verbose
         threading.Thread.__init__(self)
     
     def run(self):
-        getRaces(self.season, self.week, self.verbose)
+        getRaces(self.folder, self.season, self.week, self.verbose)
 
-def readRaces(season, week, verbose):
-    fileName = "racecache/Season %d Week %d.txt" % (season, week)
+def readRaces(folder, season, week, verbose):
+    fileName = "%s/Season %d Week %d.txt" % (folder, season, week)
     if not os.path.exists(fileName):
         print "%s not found" % fileName
         exit(1)
@@ -38,9 +39,9 @@ def readRaces(season, week, verbose):
 
     logging.getLogger().info("Read %d races from file" % len(cache.races))
     
-def getRaces(season, week, verbose):
+def getRaces(folder, season, week, verbose):
 
-    fileName = "racecache/Season %d Week %d.txt" % (season, week)
+    fileName = "%s/Season %d Week %d.txt" % (folder, season, week)
     if os.path.exists(fileName):
         print "%s already exists, exiting" % fileName
         exit(1)
@@ -75,7 +76,7 @@ def getRaces(season, week, verbose):
     
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s:w:v")
+        opts, args = getopt.getopt(sys.argv[1:], "s:w:f:v")
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -83,7 +84,7 @@ def main():
         sys.exit(2)
     output = None
     verbose = False
-    
+    folder = "racecache"
     week = -1
     for o, a in opts:
         if o == "-v":
@@ -92,22 +93,30 @@ def main():
             season = int(a)
         elif o in ("-w", "--week"):
             week = int(a)
+        elif o in ("-f", "--folder"):
+            folder = a
         else:
             assert False, "unhandled option"
 
+    if not os.path.exists(folder):
+        print "Sorry, folder '%s' does not exist" % folder
+        exit(1)
+    if not os.path.isdir(folder):
+        print "Sorry, '%s' is not a folder, is it a file?" % folder
+        exit(1)
     if week != -1:
-        getRaces(season, week, verbose)
+        getRaces(folder, season, week, verbose)
     else:
         threads = []
         for week in xrange(12):
-            t = WeekThread(season, week, verbose)
+            t = WeekThread(folder, season, week, verbose)
             t.start()
             threads.append(t)
         for thread in threads:
             thread.join()
         
 def usage():
-    print "getweek -s season -w week [-v]erbose"
+    print "downloadweek -s season [-w week] [-f foldername] [-v]erbose"
 
 if __name__ == "__main__":
     main()                    
