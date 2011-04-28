@@ -25,7 +25,7 @@ def readRaces(season, week, verbose):
     
     cache = MemoryCache.MemoryCache()        
         
-    logging.config.fileConfig("logging.conf")
+    logging.config.fileConfig(iRacingUtils.getConfigFileName())
     if not verbose: logging.getLogger().setLevel(logging.ERROR)
     
     with open(fileName,"r") as file:
@@ -45,9 +45,10 @@ def getRaces(season, week, verbose):
         print "%s already exists, exiting" % fileName
         exit(1)
         
-    logging.config.fileConfig("logging.conf")
+    logging.config.fileConfig(iRacingUtils.getConfigFileName())
     
-    primaryDAL = iRacingDAL.iRacingDAL("ian@bevantech.com","mrdo01")
+    username, password = iRacingUtils.getAccountDetails()
+    primaryDAL = iRacingDAL.iRacingDAL(username, password)
     
     cache = MemoryCache.MemoryCache()
     dal = cachingDAL.cachingDAL(primaryDAL, cache)
