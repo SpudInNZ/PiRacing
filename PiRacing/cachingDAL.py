@@ -14,9 +14,9 @@ class cachingDAL(DALBase.DALBase):
         """
         Returns a list of RaceResult objects for the specified race session
         """
-        r = self.cacheDAL.getRaceResults(subsessionid)
+        r = self.cacheDAL.getSessionResults(subsessionid)
         if r is None:
-            r = self.primaryDAL.getRaceResults(subsessionid)
+            r = self.primaryDAL.getSessionResults(subsessionid)
             if r is not None:
                 self.cacheDAL.setRaceResults(subsessionid, r)
             

@@ -146,7 +146,7 @@ class Lap:
 	"""
 	return self.lapnum != 0 and self.flags == 0    	
     
-class RaceResult:
+class SessionResult:
     """
     The detailed results of a race
     """

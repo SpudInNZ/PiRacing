@@ -14,7 +14,7 @@ import logging.config
 
 from domainmodel import Driver
 from domainmodel import Race
-from domainmodel import RaceResult
+from domainmodel import SessionResult
 from domainmodel import SeasonStanding
 from domainmodel import SeasonStandings
 from domainmodel import Laptime
@@ -177,7 +177,7 @@ class iRacingDAL(DALBase.DALBase):
                 
         return laps
     
-    def getRaceResults(self, subsessionid):
+    def getSessionResults(self, subsessionid):
         """
         Returns a a list of RaceResult objects for the specified race session
         """
@@ -259,7 +259,7 @@ class iRacingDAL(DALBase.DALBase):
             newlicenselevel = int(row[newlicenselevelIdx])
             newlicensesublevel = int(row[newlicensesublevelIdx])
             seriesname = row[seriesnameIdx]
-            raceResults.append(RaceResult(subsessionid, finpos, carid, car, carclassid, carclass, custid, driver, startpos, carnum, outid, out, interval, lapsled, averagelaptime, fastestlaptime, fastlapnum, lapscomp, inc, pts, clubpts, div, clubid, club, oldirating, newirating, oldlicenselevel, oldlicensesublevel, newlicenselevel, newlicensesublevel, seriesname))
+            raceResults.append(SessionResult(subsessionid, finpos, carid, car, carclassid, carclass, custid, driver, startpos, carnum, outid, out, interval, lapsled, averagelaptime, fastestlaptime, fastlapnum, lapscomp, inc, pts, clubpts, div, clubid, club, oldirating, newirating, oldlicenselevel, oldlicensesublevel, newlicenselevel, newlicensesublevel, seriesname))
         
         return raceResults
     
